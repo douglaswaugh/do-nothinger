@@ -2,7 +2,7 @@
 
 ## Run simple scripts
 - [x] Handle a script with 0 steps - display "Done"
-- [ ] Hook up run function to main so it runs when the application runs
+- [x] Hook up run function to main so it runs when the application runs
 - [ ] Handle a script with 1 empty step - find function, execute, wait for Enter, display "Done"
 - [ ] Multiple empty steps with functions in order, no non-step functions
 

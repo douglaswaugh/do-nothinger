@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 func main() {
-	fmt.Println("Hello, Do Nothinger!")
+	scriptPath := os.Args[1]
+	run(scriptPath, os.Stdout)
 }
 
 func run(scriptPath string, output io.Writer) {

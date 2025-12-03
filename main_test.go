@@ -1,11 +1,26 @@
 package main
 
-import "testing"
+import (
+	"bytes"
+	"os"
+	"strings"
+	"testing"
+)
 
-func TestPlaceholder(t *testing.T) {
-	// Placeholder test to verify test framework works
-	// This will be replaced with real tests during TDD
-	if false {
-		t.Error("This should never fail")
+func TestRunScriptWithZeroSteps_DisplaysDone(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString("#!/bin/bash\n")
+	scriptFile.Close()
+
+	var output bytes.Buffer
+	run(scriptFile.Name(), &output)
+
+	if !strings.Contains(output.String(), "Done") {
+		t.Errorf("Expected output to contain 'Done', got: %s", output.String())
 	}
 }

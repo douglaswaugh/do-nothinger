@@ -1,7 +1,7 @@
 # Test List
 
 ## Run simple scripts
-- [ ] Handle a script with 0 steps - display "Done"
+- [x] Handle a script with 0 steps - display "Done"
 - [ ] Handle a script with 1 empty step - find function, execute, wait for Enter, display "Done"
 - [ ] Multiple empty steps with functions in order, no non-step functions
 

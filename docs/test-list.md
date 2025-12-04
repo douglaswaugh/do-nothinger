@@ -3,7 +3,12 @@
 ## Run simple scripts
 - [x] Handle a script with 0 steps - display "Done"
 - [x] Hook up run function to main so it runs when the application runs
-- [ ] Handle a script with 1 empty step - find function, execute, wait for Enter, display "Done"
+- [ ] Script with 1 step that outputs something - assert output contains what the step echoes
+- [ ] Display "Press Enter to continue..." before waiting for input
+- [ ] Wait for Enter before showing "Done"
+- [ ] Display step name (e.g., "Step 1: Do something")
+- [ ] Display step name for a differently named step (requires parsing)
+- [ ] Display "Step complete" after Enter
 - [ ] Multiple empty steps with functions in order, no non-step functions
 
 ## Run complex scripts

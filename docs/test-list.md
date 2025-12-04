@@ -3,7 +3,7 @@
 ## Run simple scripts
 - [x] Handle a script with 0 steps - display "Done"
 - [x] Hook up run function to main so it runs when the application runs
-- [ ] Script with 1 step that outputs something - assert output contains what the step echoes
+- [x] Script with 1 step that outputs something - assert output contains what the step echoes
 - [ ] Display "Press Enter to continue..." before waiting for input
 - [ ] Wait for Enter before showing "Done"
 - [ ] Display step name (e.g., "Step 1: Do something")

@@ -17,5 +17,7 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	cmd.Stdout = output
 	cmd.Run()
 
+	fmt.Fprintln(output, "Press Enter to continue...")
+
 	fmt.Fprintln(output, "Done")
 }

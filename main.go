@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -18,6 +19,10 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	cmd.Run()
 
 	fmt.Fprintln(output, "Press Enter to continue...")
+
+	if input != nil {
+		bufio.NewReader(input).ReadString('\n')
+	}
 
 	fmt.Fprintln(output, "Done")
 }

@@ -5,7 +5,7 @@
 - [x] Hook up run function to main so it runs when the application runs
 - [x] Script with 1 step that outputs something - assert output contains what the step echoes
 - [x] Display "Press Enter to continue..." before waiting for input
-- [ ] Wait for Enter before showing "Done"
+- [x] Wait for Enter before showing "Done"
 - [ ] Display step name (e.g., "Step 1: Do something")
 - [ ] Display step name for a differently named step (requires parsing)
 - [ ] Display "Step complete" after Enter

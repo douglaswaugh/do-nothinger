@@ -7,3 +7,5 @@ I added tests to the test list either through the LLM, or manually, whichever I 
 
 Things that are going to be annoying if I do demos in languages I don't understand:
 - Not being able to run all the tests with a single keyboard shortcut
+
+I would expect the test list to evolve over time as you work on your problem and learn more about it.

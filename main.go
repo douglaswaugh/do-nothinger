@@ -8,9 +8,9 @@ import (
 
 func main() {
 	scriptPath := os.Args[1]
-	run(scriptPath, os.Stdout)
+	run(scriptPath, os.Stdin, os.Stdout)
 }
 
-func run(scriptPath string, output io.Writer) {
+func run(scriptPath string, input io.Reader, output io.Writer) {
 	fmt.Fprintln(output, "Done")
 }

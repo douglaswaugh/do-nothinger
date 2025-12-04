@@ -18,7 +18,7 @@ func TestRunScriptWithZeroSteps_DisplaysDone(t *testing.T) {
 	scriptFile.Close()
 
 	var output bytes.Buffer
-	run(scriptFile.Name(), &output)
+	run(scriptFile.Name(), nil, &output)
 
 	if !strings.Contains(output.String(), "Done") {
 		t.Errorf("Expected output to contain 'Done', got: %s", output.String())

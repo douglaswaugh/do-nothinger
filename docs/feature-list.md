@@ -10,6 +10,7 @@
 - [ ] **Add step template** - Add an empty step at position X in an existing script
 
 ## Phase 3: Enhanced execution
+- [ ] **Automatic steps** - Steps that execute without waiting for Enter (run and continue)
 - [ ] **Text input capture** - Steps can prompt for and store user input
 - [ ] **Context/variables** - Pass data between steps
 - [ ] **Windows support** - PowerShell execution on Windows

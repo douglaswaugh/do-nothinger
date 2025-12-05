@@ -50,6 +50,28 @@ step_1_do_something() {
 	}
 }
 
+func TestRunScriptWithOneStep_DisplaysStepName(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_do_something() {
+    echo "hello"
+}
+`)
+	scriptFile.Close()
+
+	var output bytes.Buffer
+	run(scriptFile.Name(), nil, &output)
+
+	if !strings.Contains(output.String(), "Step 1: Do something") {
+		t.Errorf("Expected output to contain 'Step 1: Do something', got: %s", output.String())
+	}
+}
+
 func TestRunScriptWithOneStep_DisplaysPressEnterToContinue(t *testing.T) {
 	scriptFile, err := os.CreateTemp("", "script-*.sh")
 	if err != nil {

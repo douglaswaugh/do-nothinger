@@ -16,13 +16,12 @@ func main() {
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
-	stepName := parseStepName(scriptPath)
+	functionName, displayName := parseStep(scriptPath)
 
-	if stepName != "" {
-		displayName := formatStepName(stepName)
+	if functionName != "" {
 		fmt.Fprintf(output, "Step 1: %s\n", displayName)
 
-		cmd := exec.Command("bash", "-c", "source "+scriptPath+" && "+stepName)
+		cmd := exec.Command("bash", "-c", "source "+scriptPath+" && "+functionName)
 		cmd.Stdout = output
 		cmd.Run()
 
@@ -36,32 +35,22 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	fmt.Fprintln(output, "Done")
 }
 
-func parseStepName(scriptPath string) string {
+func parseStep(scriptPath string) (functionName string, displayName string) {
 	content, err := os.ReadFile(scriptPath)
 	if err != nil {
-		return ""
+		return "", ""
 	}
 
-	re := regexp.MustCompile(`(step_\d+_\w+)\s*\(\)`)
+	re := regexp.MustCompile(`step_(\d+)_(\w+)\s*\(\)`)
 	matches := re.FindStringSubmatch(string(content))
-	if len(matches) > 1 {
-		return matches[1]
-	}
-	return ""
-}
-
-func formatStepName(stepName string) string {
-	// Remove "step_1_" prefix
-	re := regexp.MustCompile(`step_\d+_`)
-	name := re.ReplaceAllString(stepName, "")
-
-	// Replace underscores with spaces
-	name = strings.ReplaceAll(name, "_", " ")
-
-	// Capitalize first letter
-	if len(name) > 0 {
-		name = strings.ToUpper(string(name[0])) + name[1:]
+	if len(matches) < 3 {
+		return "", ""
 	}
 
-	return name
+	functionName = matches[0][:len(matches[0])-2] // Remove the "()" from the match
+	description := strings.ReplaceAll(matches[2], "_", " ")
+	description = strings.ToUpper(string(description[0])) + description[1:]
+	displayName = description
+
+	return functionName, displayName
 }

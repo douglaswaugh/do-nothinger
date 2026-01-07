@@ -16,10 +16,13 @@ func main() {
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
-	functionName, displayName := parseStep(scriptPath)
+	stepNumber, stepDescription := parseStep(scriptPath)
 
-	if functionName != "" {
-		fmt.Fprintf(output, "Step 1: %s\n", displayName)
+	if stepNumber != "" {
+		functionName := formatFunctionName(stepNumber, stepDescription)
+		displayName := formatDisplayName(stepDescription)
+
+		fmt.Fprintf(output, "Step %s: %s\n", stepNumber, displayName)
 
 		cmd := exec.Command("bash", "-c", "source "+scriptPath+" && "+functionName)
 		cmd.Stdout = output
@@ -35,7 +38,7 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	fmt.Fprintln(output, "Done")
 }
 
-func parseStep(scriptPath string) (functionName string, displayName string) {
+func parseStep(scriptPath string) (stepNumber string, stepDescription string) {
 	content, err := os.ReadFile(scriptPath)
 	if err != nil {
 		return "", ""
@@ -47,10 +50,17 @@ func parseStep(scriptPath string) (functionName string, displayName string) {
 		return "", ""
 	}
 
-	functionName = matches[0][:len(matches[0])-2] // Remove the "()" from the match
-	description := strings.ReplaceAll(matches[2], "_", " ")
-	description = strings.ToUpper(string(description[0])) + description[1:]
-	displayName = description
+	return matches[1], matches[2]
+}
 
-	return functionName, displayName
+func formatFunctionName(stepNumber, stepDescription string) string {
+	return "step_" + stepNumber + "_" + stepDescription
+}
+
+func formatDisplayName(stepDescription string) string {
+	name := strings.ReplaceAll(stepDescription, "_", " ")
+	if len(name) > 0 {
+		name = strings.ToUpper(string(name[0])) + name[1:]
+	}
+	return name
 }

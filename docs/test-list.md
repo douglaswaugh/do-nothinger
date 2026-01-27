@@ -7,7 +7,7 @@
 - [x] Display "Press Enter to continue..." before waiting for input
 - [x] Wait for Enter before showing "Done"
 - [x] Display step name (e.g., "Step 1: Do something")
-- [ ] Display step name for a differently named step (requires parsing)
+- [x] Display step name for a differently named step (requires parsing)
 - [ ] Display "Step complete" after Enter
 - [ ] Multiple empty steps with functions in order, no non-step functions
 

@@ -11,13 +11,13 @@
 - [x] Display "Step complete" after Enter
 - [x] Multiple steps with functions in order, no non-step functions
 
+## Execution
+- [ ] Single step script that actually does something - execute and display output
+
 ## Run complex scripts
 - [ ] Multiple empty steps with functions in different order, no non-step functions
 - [ ] Multiple empty steps with functions in order, with non-step functions
 - [ ] Multiple empty steps with functions in different order, with non-step functions
-
-## Execution
-- [ ] Single step script that actually does something - execute and display output
 
 ## Errors
 - [ ] Handle script file not found

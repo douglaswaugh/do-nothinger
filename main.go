@@ -10,19 +10,24 @@ import (
 	"strings"
 )
 
+type Step struct {
+	Number      string
+	Description string
+}
+
 func main() {
 	scriptPath := os.Args[1]
 	run(scriptPath, os.Stdin, os.Stdout)
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
-	stepNumber, stepDescription := parseStep(scriptPath)
+	step := parseStep(scriptPath)
 
-	if stepNumber != "" {
-		functionName := formatFunctionName(stepNumber, stepDescription)
-		displayName := formatDisplayName(stepDescription)
+	if step != nil {
+		functionName := formatFunctionName(step)
+		displayName := formatDisplayName(step)
 
-		fmt.Fprintf(output, "Step %s: %s\n", stepNumber, displayName)
+		fmt.Fprintf(output, "Step %s: %s\n", step.Number, displayName)
 
 		cmd := exec.Command("bash", "-c", "source "+scriptPath+" && "+functionName)
 		cmd.Stdout = output
@@ -38,27 +43,27 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	fmt.Fprintln(output, "Done")
 }
 
-func parseStep(scriptPath string) (stepNumber string, stepDescription string) {
+func parseStep(scriptPath string) *Step {
 	content, err := os.ReadFile(scriptPath)
 	if err != nil {
-		return "", ""
+		return nil
 	}
 
 	re := regexp.MustCompile(`step_(\d+)_(\w+)\s*\(\)`)
 	matches := re.FindStringSubmatch(string(content))
 	if len(matches) < 3 {
-		return "", ""
+		return nil
 	}
 
-	return matches[1], matches[2]
+	return &Step{Number: matches[1], Description: matches[2]}
 }
 
-func formatFunctionName(stepNumber, stepDescription string) string {
-	return "step_" + stepNumber + "_" + stepDescription
+func formatFunctionName(step *Step) string {
+	return "step_" + step.Number + "_" + step.Description
 }
 
-func formatDisplayName(stepDescription string) string {
-	name := strings.ReplaceAll(stepDescription, "_", " ")
+func formatDisplayName(step *Step) string {
+	name := strings.ReplaceAll(step.Description, "_", " ")
 	if len(name) > 0 {
 		name = strings.ToUpper(string(name[0])) + name[1:]
 	}

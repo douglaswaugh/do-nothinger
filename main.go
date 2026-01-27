@@ -21,9 +21,14 @@ func main() {
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
-	step := parseStep(scriptPath)
+	steps := parseSteps(scriptPath)
 
-	if step != nil {
+	var reader *bufio.Reader
+	if input != nil {
+		reader = bufio.NewReader(input)
+	}
+
+	for _, step := range steps {
 		functionName := formatFunctionName(step)
 		displayName := formatDisplayName(step)
 
@@ -35,8 +40,8 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 
 		fmt.Fprintln(output, "Press Enter to continue...")
 
-		if input != nil {
-			bufio.NewReader(input).ReadString('\n')
+		if reader != nil {
+			reader.ReadString('\n')
 		}
 
 		fmt.Fprintf(output, "Step %s: %s complete\n", step.Number, displayName)
@@ -45,19 +50,23 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	fmt.Fprintln(output, "Done")
 }
 
-func parseStep(scriptPath string) *Step {
+func parseSteps(scriptPath string) []*Step {
 	content, err := os.ReadFile(scriptPath)
 	if err != nil {
 		return nil
 	}
 
 	re := regexp.MustCompile(`step_(\d+)_(\w+)\s*\(\)`)
-	matches := re.FindStringSubmatch(string(content))
-	if len(matches) < 3 {
-		return nil
+	matches := re.FindAllStringSubmatch(string(content), -1)
+
+	var steps []*Step
+	for _, match := range matches {
+		if len(match) >= 3 {
+			steps = append(steps, &Step{Number: match[1], Description: match[2]})
+		}
 	}
 
-	return &Step{Number: matches[1], Description: matches[2]}
+	return steps
 }
 
 func formatFunctionName(step *Step) string {

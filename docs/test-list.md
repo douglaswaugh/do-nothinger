@@ -9,7 +9,7 @@
 - [x] Display step name (e.g., "Step 1: Do something")
 - [x] Display step name for a differently named step (requires parsing)
 - [x] Display "Step complete" after Enter
-- [ ] Multiple empty steps with functions in order, no non-step functions
+- [x] Multiple steps with functions in order, no non-step functions
 
 ## Run complex scripts
 - [ ] Multiple empty steps with functions in different order, no non-step functions

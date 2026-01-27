@@ -195,3 +195,60 @@ step_1_do_something() {
 		t.Errorf("Expected output to contain 'Step 1: Do something complete', got: %s", output.String())
 	}
 }
+
+func TestRunScriptWithMultipleStepsInOrder_ExecutesAllSteps(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_first_step() {
+    echo "first step output"
+}
+step_2_second_step() {
+    echo "second step output"
+}
+`)
+	scriptFile.Close()
+
+	inputReader, inputWriter := io.Pipe()
+	var output bytes.Buffer
+
+	done := make(chan bool)
+	go func() {
+		run(scriptFile.Name(), inputReader, &output)
+		done <- true
+	}()
+
+	// Send Enter presses in a goroutine to avoid deadlock if run() finishes early
+	go func() {
+		// Send Enter for first step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		// Send Enter for second step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		inputWriter.Close()
+	}()
+
+	// Wait for run() to complete
+	<-done
+
+	outputStr := output.String()
+	if !strings.Contains(outputStr, "Step 1: First step") {
+		t.Errorf("Expected output to contain 'Step 1: First step', got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "first step output") {
+		t.Errorf("Expected output to contain 'first step output', got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "Step 2: Second step") {
+		t.Errorf("Expected output to contain 'Step 2: Second step', got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "second step output") {
+		t.Errorf("Expected output to contain 'second step output', got: %s", outputStr)
+	}
+}

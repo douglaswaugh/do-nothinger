@@ -38,6 +38,8 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 		if input != nil {
 			bufio.NewReader(input).ReadString('\n')
 		}
+
+		fmt.Fprintf(output, "Step %s: %s complete\n", step.Number, displayName)
 	}
 
 	fmt.Fprintln(output, "Done")

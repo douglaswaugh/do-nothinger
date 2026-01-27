@@ -155,3 +155,43 @@ step_1_check_queue_count() {
 		t.Errorf("Expected output to contain 'Step 1: Check queue count', got: %s", output.String())
 	}
 }
+
+func TestRunScriptWithOneStep_DisplaysStepCompleteAfterEnter(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_do_something() {
+    echo "hello"
+}
+`)
+	scriptFile.Close()
+
+	inputReader, inputWriter := io.Pipe()
+	var output bytes.Buffer
+
+	done := make(chan bool)
+	go func() {
+		run(scriptFile.Name(), inputReader, &output)
+		done <- true
+	}()
+
+	// Give run() time to reach the input wait
+	time.Sleep(100 * time.Millisecond)
+
+	// Send Enter
+	inputWriter.Write([]byte("\n"))
+
+	// Wait for run() to complete
+	<-done
+
+	// Clean up
+	inputWriter.Close()
+
+	if !strings.Contains(output.String(), "Step 1: Do something complete") {
+		t.Errorf("Expected output to contain 'Step 1: Do something complete', got: %s", output.String())
+	}
+}

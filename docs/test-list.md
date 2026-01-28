@@ -20,7 +20,7 @@
 - [x] Multiple empty steps with functions in different order, with non-step functions
 
 ## Errors
-- [ ] Handle script file not found
+- [x] Handle script file not found
 - [ ] Handle empty script file path
 - [ ] Handle step failed (non-zero exit code)
 

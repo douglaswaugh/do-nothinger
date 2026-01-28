@@ -492,3 +492,16 @@ step_3_third_step() {
 		t.Errorf("Expected output to NOT contain 'another helper', got: %s", outputStr)
 	}
 }
+
+func TestRunScriptFileNotFound_DisplaysError(t *testing.T) {
+	var output bytes.Buffer
+	run("/nonexistent/script.sh", nil, &output)
+
+	outputStr := output.String()
+	if !strings.Contains(outputStr, "Error") && !strings.Contains(outputStr, "error") {
+		t.Errorf("Expected output to contain an error message, got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "not found") && !strings.Contains(outputStr, "no such file") {
+		t.Errorf("Expected output to mention file not found, got: %s", outputStr)
+	}
+}

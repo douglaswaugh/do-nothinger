@@ -22,7 +22,11 @@ func main() {
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
-	steps := parseSteps(scriptPath)
+	steps, err := parseSteps(scriptPath)
+	if err != nil {
+		fmt.Fprintf(output, "Error: script file not found: %s\n", scriptPath)
+		return
+	}
 
 	var reader *bufio.Reader
 	if input != nil {
@@ -51,10 +55,10 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 	fmt.Fprintln(output, "Done")
 }
 
-func parseSteps(scriptPath string) []*Step {
+func parseSteps(scriptPath string) ([]*Step, error) {
 	content, err := os.ReadFile(scriptPath)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	re := regexp.MustCompile(`step_(\d+)_(\w+)\s*\(\)`)
@@ -71,7 +75,7 @@ func parseSteps(scriptPath string) []*Step {
 		return steps[i].Number < steps[j].Number
 	})
 
-	return steps
+	return steps, nil
 }
 
 func formatFunctionName(step *Step) string {

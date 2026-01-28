@@ -22,6 +22,11 @@ func main() {
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
+	if scriptPath == "" {
+		fmt.Fprintln(output, "Error: empty script path")
+		return
+	}
+
 	steps, err := parseSteps(scriptPath)
 	if err != nil {
 		fmt.Fprintf(output, "Error: script file not found: %s\n", scriptPath)

@@ -21,7 +21,7 @@
 
 ## Errors
 - [x] Handle script file not found
-- [ ] Handle empty script file path
+- [x] Handle empty script file path
 - [ ] Handle step failed (non-zero exit code)
 
 ## CLI

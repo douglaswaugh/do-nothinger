@@ -505,3 +505,16 @@ func TestRunScriptFileNotFound_DisplaysError(t *testing.T) {
 		t.Errorf("Expected output to mention file not found, got: %s", outputStr)
 	}
 }
+
+func TestRunEmptyScriptPath_DisplaysError(t *testing.T) {
+	var output bytes.Buffer
+	run("", nil, &output)
+
+	outputStr := output.String()
+	if !strings.Contains(outputStr, "Error") && !strings.Contains(outputStr, "error") {
+		t.Errorf("Expected output to contain an error message, got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "empty") || !strings.Contains(outputStr, "path") {
+		t.Errorf("Expected output to mention empty path, got: %s", outputStr)
+	}
+}

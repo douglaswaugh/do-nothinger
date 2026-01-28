@@ -16,7 +16,7 @@
 
 ## Run complex scripts
 - [x] Multiple empty steps with functions in different order, no non-step functions
-- [ ] Multiple empty steps with functions in order, with non-step functions
+- [x] Multiple empty steps with functions in order, with non-step functions
 - [ ] Multiple empty steps with functions in different order, with non-step functions
 
 ## Errors

@@ -348,3 +348,68 @@ step_3_third_step() {
 		t.Errorf("Expected steps to execute in order 1, 2, 3, but got different order. Output: %s", outputStr)
 	}
 }
+
+func TestRunScriptWithStepsAndNonStepFunctions_OnlyExecutesSteps(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+helper_function() {
+    echo "helper called"
+}
+step_1_first_step() {
+    echo "first"
+}
+another_helper() {
+    echo "another helper"
+}
+step_2_second_step() {
+    echo "second"
+}
+`)
+	scriptFile.Close()
+
+	inputReader, inputWriter := io.Pipe()
+	var output bytes.Buffer
+
+	done := make(chan bool)
+	go func() {
+		run(scriptFile.Name(), inputReader, &output)
+		done <- true
+	}()
+
+	// Send Enter presses in a goroutine to avoid deadlock if run() finishes early
+	go func() {
+		// Send Enter for first step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		// Send Enter for second step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		inputWriter.Close()
+	}()
+
+	// Wait for run() to complete
+	<-done
+
+	outputStr := output.String()
+
+	// Verify only step functions are executed
+	if !strings.Contains(outputStr, "first") {
+		t.Errorf("Expected output to contain 'first', got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "second") {
+		t.Errorf("Expected output to contain 'second', got: %s", outputStr)
+	}
+	if strings.Contains(outputStr, "helper called") {
+		t.Errorf("Expected output to NOT contain 'helper called', got: %s", outputStr)
+	}
+	if strings.Contains(outputStr, "another helper") {
+		t.Errorf("Expected output to NOT contain 'another helper', got: %s", outputStr)
+	}
+}

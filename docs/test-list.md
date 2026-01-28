@@ -15,7 +15,7 @@
 - [x] Single step script that actually does something - execute and display output
 
 ## Run complex scripts
-- [ ] Multiple empty steps with functions in different order, no non-step functions
+- [x] Multiple empty steps with functions in different order, no non-step functions
 - [ ] Multiple empty steps with functions in order, with non-step functions
 - [ ] Multiple empty steps with functions in different order, with non-step functions
 

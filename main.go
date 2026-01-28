@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -65,6 +66,10 @@ func parseSteps(scriptPath string) []*Step {
 			steps = append(steps, &Step{Number: match[1], Description: match[2]})
 		}
 	}
+
+	sort.Slice(steps, func(i, j int) bool {
+		return steps[i].Number < steps[j].Number
+	})
 
 	return steps
 }

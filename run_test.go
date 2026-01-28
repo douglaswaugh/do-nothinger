@@ -283,3 +283,68 @@ step_1_create_file() {
 		t.Errorf("Expected file to contain 'test content', got: %s", string(content))
 	}
 }
+
+func TestRunScriptWithMultipleStepsInDifferentOrder_ExecutesInCorrectOrder(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_2_second_step() {
+    echo "second"
+}
+step_1_first_step() {
+    echo "first"
+}
+step_3_third_step() {
+    echo "third"
+}
+`)
+	scriptFile.Close()
+
+	inputReader, inputWriter := io.Pipe()
+	var output bytes.Buffer
+
+	done := make(chan bool)
+	go func() {
+		run(scriptFile.Name(), inputReader, &output)
+		done <- true
+	}()
+
+	// Send Enter presses in a goroutine to avoid deadlock if run() finishes early
+	go func() {
+		// Send Enter for first step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		// Send Enter for second step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		// Send Enter for third step
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+
+		inputWriter.Close()
+	}()
+
+	// Wait for run() to complete
+	<-done
+
+	outputStr := output.String()
+
+	// Verify steps are executed in numerical order (1, 2, 3), not file order (2, 1, 3)
+	firstPos := strings.Index(outputStr, "first")
+	secondPos := strings.Index(outputStr, "second")
+	thirdPos := strings.Index(outputStr, "third")
+
+	if firstPos == -1 || secondPos == -1 || thirdPos == -1 {
+		t.Errorf("Expected output to contain 'first', 'second', and 'third', got: %s", outputStr)
+	}
+
+	if !(firstPos < secondPos && secondPos < thirdPos) {
+		t.Errorf("Expected steps to execute in order 1, 2, 3, but got different order. Output: %s", outputStr)
+	}
+}

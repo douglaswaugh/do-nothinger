@@ -12,7 +12,7 @@
 - [x] Multiple steps with functions in order, no non-step functions
 
 ## Execution
-- [ ] Single step script that actually does something - execute and display output
+- [x] Single step script that actually does something - execute and display output
 
 ## Run complex scripts
 - [ ] Multiple empty steps with functions in different order, no non-step functions

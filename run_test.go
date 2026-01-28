@@ -252,3 +252,34 @@ step_2_second_step() {
 		t.Errorf("Expected output to contain 'second step output', got: %s", outputStr)
 	}
 }
+
+func TestRunScriptWithOneStep_ExecutesStepCommand(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_create_file() {
+    echo "test content" > /tmp/do-nothinger-test-output.txt
+}
+`)
+	scriptFile.Close()
+
+	// Clean up test file before and after
+	os.Remove("/tmp/do-nothinger-test-output.txt")
+	defer os.Remove("/tmp/do-nothinger-test-output.txt")
+
+	var output bytes.Buffer
+	run(scriptFile.Name(), nil, &output)
+
+	// Verify the file was created by the step
+	content, err := os.ReadFile("/tmp/do-nothinger-test-output.txt")
+	if err != nil {
+		t.Errorf("Expected step to create file /tmp/do-nothinger-test-output.txt, but got error: %v", err)
+	}
+	if !strings.Contains(string(content), "test content") {
+		t.Errorf("Expected file to contain 'test content', got: %s", string(content))
+	}
+}

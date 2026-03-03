@@ -46,7 +46,12 @@ func run(scriptPath string, input io.Reader, output io.Writer) {
 
 		cmd := exec.Command("bash", "-c", "source "+scriptPath+" && "+functionName)
 		cmd.Stdout = output
-		cmd.Run()
+		err := cmd.Run()
+
+		if err != nil {
+			fmt.Fprintf(output, "Error: step %s failed\n", step.Number)
+			return
+		}
 
 		fmt.Fprintln(output, "Press Enter to continue...")
 

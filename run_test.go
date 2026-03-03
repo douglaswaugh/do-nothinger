@@ -518,3 +518,30 @@ func TestRunEmptyScriptPath_DisplaysError(t *testing.T) {
 		t.Errorf("Expected output to mention empty path, got: %s", outputStr)
 	}
 }
+
+func TestRunStepWithNonZeroExitCode_DisplaysError(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_failing_step() {
+    echo "about to fail"
+    exit 1
+}
+`)
+	scriptFile.Close()
+
+	var output bytes.Buffer
+	run(scriptFile.Name(), nil, &output)
+
+	outputStr := output.String()
+	if !strings.Contains(outputStr, "Error") && !strings.Contains(outputStr, "error") {
+		t.Errorf("Expected output to contain an error message, got: %s", outputStr)
+	}
+	if !strings.Contains(outputStr, "failed") && !strings.Contains(outputStr, "fail") {
+		t.Errorf("Expected output to mention step failure, got: %s", outputStr)
+	}
+}

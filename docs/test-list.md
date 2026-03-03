@@ -22,7 +22,7 @@
 ## Errors
 - [x] Handle script file not found
 - [x] Handle empty script file path
-- [ ] Handle step failed (non-zero exit code)
+- [x] Handle step failed (non-zero exit code)
 
 ## CLI
 - [ ] Wire up CLI: `do-nothinger run <script-path>`

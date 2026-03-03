@@ -26,6 +26,12 @@
 - [ ] **Script composition** - Scripts reference steps by name (YAML manifest)
 - [ ] **Shared steps** - Use the same step across multiple scripts
 
+## Phase 6: Audit and observability
+- [ ] **Execution logging** - Record when scripts are run and by whom
+- [ ] **Step tracking** - Log which steps completed, failed, or were skipped
+- [ ] **Audit trail** - Structured logs with timestamps, user, environment context
+- [ ] **Query logs** - Search/filter execution history
+
 ---
 
 ## Script Format

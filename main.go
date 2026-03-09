@@ -14,6 +14,8 @@ func main() {
 }
 
 func run(scriptPath string, input io.Reader, output io.Writer) {
+	fmt.Fprintln(output, "Step 1: Do something")
+
 	cmd := exec.Command("bash", "-c", "source "+scriptPath+" && step_1_do_something")
 	cmd.Stdout = output
 	cmd.Run()

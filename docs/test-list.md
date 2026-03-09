@@ -8,7 +8,7 @@
 - [x] Wait for Enter before showing "Done"
 - [x] Display step name (e.g., "Step 1: Do something")
 - [x] Display step name for a differently named step (requires parsing)
-- [ ] Display "Step complete" after Enter
+- [x] Display "Step complete" after Enter
 - [ ] Multiple empty steps with functions in order, no non-step functions
 
 ## Run complex scripts

@@ -10,25 +10,18 @@ import (
 )
 
 func TestRunScriptWithOneStep_WaitsForEnterBeforeShowingDone(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_do_something() {
     echo "hello"
 }
 `)
-	scriptFile.Close()
 
 	inputReader, inputWriter := io.Pipe()
 	var output bytes.Buffer
 
 	done := make(chan bool)
 	go func() {
-		run(scriptFile.Name(), inputReader, &output)
+		run(scriptPath, inputReader, &output)
 		done <- true
 	}()
 
@@ -51,21 +44,14 @@ step_1_do_something() {
 }
 
 func TestRunScriptWithOneStep_DisplaysPressEnterToContinue(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_do_something() {
     echo "hello"
 }
 `)
-	scriptFile.Close()
 
 	var output bytes.Buffer
-	run(scriptFile.Name(), nil, &output)
+	run(scriptPath, nil, &output)
 
 	if !strings.Contains(output.String(), "Press Enter to continue...") {
 		t.Errorf("Expected output to contain 'Press Enter to continue...', got: %s", output.String())
@@ -73,21 +59,14 @@ step_1_do_something() {
 }
 
 func TestRunScriptWithOneStep_OutputsStepContent(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_do_something() {
     echo "hello from step"
 }
 `)
-	scriptFile.Close()
 
 	var output bytes.Buffer
-	run(scriptFile.Name(), nil, &output)
+	run(scriptPath, nil, &output)
 
 	if !strings.Contains(output.String(), "hello from step") {
 		t.Errorf("Expected output to contain 'hello from step', got: %s", output.String())
@@ -95,21 +74,14 @@ step_1_do_something() {
 }
 
 func TestRunScriptWithOneStep_DisplaysStepName(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_do_something() {
     echo "hello"
 }
 `)
-	scriptFile.Close()
 
 	var output bytes.Buffer
-	run(scriptFile.Name(), nil, &output)
+	run(scriptPath, nil, &output)
 
 	if !strings.Contains(output.String(), "Step 1: Do something") {
 		t.Errorf("Expected output to contain 'Step 1: Do something', got: %s", output.String())
@@ -117,21 +89,14 @@ step_1_do_something() {
 }
 
 func TestRunScriptWithOneStep_DisplaysDifferentStepName(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_deploy_application() {
     echo "hello"
 }
 `)
-	scriptFile.Close()
 
 	var output bytes.Buffer
-	run(scriptFile.Name(), nil, &output)
+	run(scriptPath, nil, &output)
 
 	if !strings.Contains(output.String(), "Step 1: Deploy application") {
 		t.Errorf("Expected output to contain 'Step 1: Deploy application', got: %s", output.String())
@@ -139,25 +104,18 @@ step_1_deploy_application() {
 }
 
 func TestRunScriptWithOneStep_DisplaysStepCompleteAfterEnter(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_do_something() {
     echo "hello"
 }
 `)
-	scriptFile.Close()
 
 	inputReader, inputWriter := io.Pipe()
 	var output bytes.Buffer
 
 	done := make(chan bool)
 	go func() {
-		run(scriptFile.Name(), inputReader, &output)
+		run(scriptPath, inputReader, &output)
 		done <- true
 	}()
 
@@ -172,26 +130,19 @@ step_1_do_something() {
 }
 
 func TestRunScriptWithMultipleEmptyStepsInOrder_DisplaysAllStepNames(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString(`#!/bin/bash
+	scriptPath := createTempScript(t, `#!/bin/bash
 step_1_do_something() {
 }
 step_2_do_another_thing() {
 }
 `)
-	scriptFile.Close()
 
 	inputReader, inputWriter := io.Pipe()
 	var output bytes.Buffer
 
 	done := make(chan bool)
 	go func() {
-		run(scriptFile.Name(), inputReader, &output)
+		run(scriptPath, inputReader, &output)
 		done <- true
 	}()
 
@@ -218,19 +169,24 @@ step_2_do_another_thing() {
 }
 
 func TestRunScriptWithZeroSteps_DisplaysDone(t *testing.T) {
-	scriptFile, err := os.CreateTemp("", "script-*.sh")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(scriptFile.Name())
-
-	scriptFile.WriteString("#!/bin/bash\n")
-	scriptFile.Close()
+	scriptPath := createTempScript(t, "#!/bin/bash\n")
 
 	var output bytes.Buffer
-	run(scriptFile.Name(), nil, &output)
+	run(scriptPath, nil, &output)
 
 	if !strings.Contains(output.String(), "Done") {
 		t.Errorf("Expected output to contain 'Done', got: %s", output.String())
 	}
+}
+
+func createTempScript(t *testing.T, content string) string {
+	t.Helper()
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.Remove(scriptFile.Name()) })
+	scriptFile.WriteString(content)
+	scriptFile.Close()
+	return scriptFile.Name()
 }

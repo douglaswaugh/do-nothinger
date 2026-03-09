@@ -18,16 +18,14 @@ type step struct {
 }
 
 func parseSteps(scriptPath string) []step {
-	file, err := os.Open(scriptPath)
+	data, err := os.ReadFile(scriptPath)
 	if err != nil {
 		return nil
 	}
-	defer file.Close()
 
 	var steps []step
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
 		matches := stepFuncPattern.FindStringSubmatch(line)
 		if matches != nil {
 			funcName := matches[1]

@@ -116,6 +116,28 @@ step_1_do_something() {
 	}
 }
 
+func TestRunScriptWithOneStep_DisplaysDifferentStepName(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_deploy_application() {
+    echo "hello"
+}
+`)
+	scriptFile.Close()
+
+	var output bytes.Buffer
+	run(scriptFile.Name(), nil, &output)
+
+	if !strings.Contains(output.String(), "Step 1: Deploy application") {
+		t.Errorf("Expected output to contain 'Step 1: Deploy application', got: %s", output.String())
+	}
+}
+
 func TestRunScriptWithZeroSteps_DisplaysDone(t *testing.T) {
 	scriptFile, err := os.CreateTemp("", "script-*.sh")
 	if err != nil {

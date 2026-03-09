@@ -171,6 +171,52 @@ step_1_do_something() {
 	}
 }
 
+func TestRunScriptWithMultipleEmptyStepsInOrder_DisplaysAllStepNames(t *testing.T) {
+	scriptFile, err := os.CreateTemp("", "script-*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(scriptFile.Name())
+
+	scriptFile.WriteString(`#!/bin/bash
+step_1_do_something() {
+}
+step_2_do_another_thing() {
+}
+`)
+	scriptFile.Close()
+
+	inputReader, inputWriter := io.Pipe()
+	var output bytes.Buffer
+
+	done := make(chan bool)
+	go func() {
+		run(scriptFile.Name(), inputReader, &output)
+		done <- true
+	}()
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+		time.Sleep(100 * time.Millisecond)
+		inputWriter.Write([]byte("\n"))
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(3 * time.Second):
+		t.Fatal("run() did not complete within timeout")
+	}
+	inputWriter.Close()
+
+	if !strings.Contains(output.String(), "Step 1: Do something") {
+		t.Errorf("Expected output to contain 'Step 1: Do something', got: %s", output.String())
+	}
+	if !strings.Contains(output.String(), "Step 2: Do another thing") {
+		t.Errorf("Expected output to contain 'Step 2: Do another thing', got: %s", output.String())
+	}
+}
+
 func TestRunScriptWithZeroSteps_DisplaysDone(t *testing.T) {
 	scriptFile, err := os.CreateTemp("", "script-*.sh")
 	if err != nil {
